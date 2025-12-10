@@ -25,8 +25,7 @@
             --glass-border: rgba(0, 0, 0, 0.1);
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
@@ -208,7 +207,7 @@
 
     <main class="container">
         <div class="profile-photo animate-element">
-            <img src="profile-photo.jpg" alt="SEMİH ÇELİK">
+            <img src="profile-photo.webp" alt="SEMİH ÇELİK">
         </div>
 
         <h1 class="animate-element">SEMİH ÇELİK</h1>
@@ -224,23 +223,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const themeIcon = document.getElementById('theme-icon');
             const html = document.documentElement;
-            const currentTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeToggle = document.getElementById('theme-toggle');
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-            if (currentTheme) {
-                html.setAttribute('data-theme', currentTheme);
-                themeIcon.className = currentTheme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-            }
+            const setTheme = (theme) => {
+                html.setAttribute('data-theme', theme);
+                themeIcon.className = theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            };
+
+            const initTheme = () => {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme) {
+                    setTheme(savedTheme);
+                } else {
+                    setTheme(prefersDarkScheme.matches ? 'dark' : 'light');
+                }
+            };
 
             themeToggle.addEventListener('click', () => {
                 const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-                html.setAttribute('data-theme', newTheme);
+                setTheme(newTheme);
                 localStorage.setItem('theme', newTheme);
-                themeIcon.className = newTheme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
             });
 
+            prefersDarkScheme.addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+
+            initTheme();
             document.querySelectorAll('.animate-element').forEach(el => el.classList.add('is-visible'));
         });
     </script>
